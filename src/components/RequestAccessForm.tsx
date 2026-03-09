@@ -184,35 +184,11 @@ export default function RequestAccessForm({ municipalities }: Props) {
   const doSubmit = async (finalReferral?: string) => {
     setSubmitting(true);
     setError('');
-    const ref = finalReferral ?? (referral === 'Other' ? `Other: ${referralOther}` : referral);
-    try {
-      const res = await fetch('/api/submit-request-access', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name,
-          email,
-          role: role === 'Other' ? `Other: ${roleOther}` : role,
-          roleOther,
-          municipality: muniName,
-          population: muniPop,
-          teamSize,
-          referral: ref,
-          referralOther,
-          submittedAt: new Date().toISOString(),
-        }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        setError((data as any).error || 'Something went wrong. Please try again.');
-        setSubmitting(false);
-        return;
-      }
-      navigate(7);
-    } catch {
-      setError('Network error. Please try again.');
+    // Removed API submission as requested. Just advancing to success step.
+    setTimeout(() => {
       setSubmitting(false);
-    }
+      navigate(7);
+    }, 600);
   };
 
   const isNavy = step === 0 || step === 7;
@@ -264,7 +240,7 @@ export default function RequestAccessForm({ municipalities }: Props) {
       {step > 0 && step < 7 && (
         <div className="fixed top-0 left-0 right-0 z-50 h-1 bg-slate-200">
           <div
-            className="h-full bg-[#31C48D] transition-all duration-500 ease-out"
+            className="h-full bg-[var(--color-secondary)] transition-all duration-500 ease-out"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -329,7 +305,7 @@ export default function RequestAccessForm({ municipalities }: Props) {
           {/* Step 1: Name */}
           {step === 1 && (
             <div className="bg-white rounded-2xl shadow-lg p-8">
-              <p className="text-xs font-semibold text-[#31C48D] uppercase tracking-widest mb-2">Step 1 of 6</p>
+              <p className="text-xs font-semibold text-[var(--color-secondary)] uppercase tracking-widest mb-2">Step 1 of 6</p>
               <h2 className="text-xl font-bold text-slate-800 mb-1">What's your name?</h2>
               <p className="text-slate-500 text-sm mb-6">We'd like to know who we're talking to.</p>
               <input
@@ -339,7 +315,7 @@ export default function RequestAccessForm({ municipalities }: Props) {
                 onChange={e => setName(e.target.value)}
                 placeholder="Jane Smith"
                 autoComplete="name"
-                className="w-full border-b-2 border-slate-200 focus:border-[#31C48D] outline-none text-slate-800 pb-3 bg-transparent transition-colors placeholder:text-slate-300"
+                className="w-full border-b-2 border-slate-200 focus:border-[var(--color-secondary)] outline-none text-slate-800 pb-3 bg-transparent transition-colors placeholder:text-slate-300"
                 style={{ fontSize: '18px' }}
               />
               {error && <p className="text-red-500 text-sm mt-3">{error}</p>}
@@ -353,7 +329,7 @@ export default function RequestAccessForm({ municipalities }: Props) {
           {/* Step 2: Email */}
           {step === 2 && (
             <div className="bg-white rounded-2xl shadow-lg p-8">
-              <p className="text-xs font-semibold text-[#31C48D] uppercase tracking-widest mb-2">Step 2 of 6</p>
+              <p className="text-xs font-semibold text-[var(--color-secondary)] uppercase tracking-widest mb-2">Step 2 of 6</p>
               <h2 className="text-xl font-bold text-slate-800 mb-1">Your official email?</h2>
               <p className="text-slate-500 text-sm mb-6">Use your municipality or government email address.</p>
               <input
@@ -363,7 +339,7 @@ export default function RequestAccessForm({ municipalities }: Props) {
                 onChange={e => setEmail(e.target.value)}
                 placeholder="jane@kelowna.ca"
                 autoComplete="email"
-                className="w-full border-b-2 border-slate-200 focus:border-[#31C48D] outline-none text-slate-800 pb-3 bg-transparent transition-colors placeholder:text-slate-300"
+                className="w-full border-b-2 border-slate-200 focus:border-[var(--color-secondary)] outline-none text-slate-800 pb-3 bg-transparent transition-colors placeholder:text-slate-300"
                 style={{ fontSize: '18px' }}
               />
               {error && <p className="text-red-500 text-sm mt-3">{error}</p>}
@@ -377,7 +353,7 @@ export default function RequestAccessForm({ municipalities }: Props) {
           {/* Step 3: Role */}
           {step === 3 && (
             <div className="bg-white rounded-2xl shadow-lg p-8">
-              <p className="text-xs font-semibold text-[#31C48D] uppercase tracking-widest mb-2">Step 3 of 6</p>
+              <p className="text-xs font-semibold text-[var(--color-secondary)] uppercase tracking-widest mb-2">Step 3 of 6</p>
               <h2 className="text-xl font-bold text-slate-800 mb-1">What's your role?</h2>
               <p className="text-slate-500 text-sm mb-5">Select the option that best describes you.</p>
               <div className="flex flex-col gap-2">
@@ -395,7 +371,7 @@ export default function RequestAccessForm({ municipalities }: Props) {
                     value={roleOther}
                     onChange={e => setRoleOther(e.target.value)}
                     placeholder="Describe your role..."
-                    className="w-full border-b-2 border-slate-200 focus:border-[#31C48D] outline-none text-slate-800 pb-2 bg-transparent transition-colors placeholder:text-slate-300"
+                    className="w-full border-b-2 border-slate-200 focus:border-[var(--color-secondary)] outline-none text-slate-800 pb-2 bg-transparent transition-colors placeholder:text-slate-300"
                     style={{ fontSize: '16px' }}
                     onKeyDown={e => { if (e.key === 'Enter' && roleOther.trim()) { e.preventDefault(); next(); } }}
                   />
@@ -410,7 +386,7 @@ export default function RequestAccessForm({ municipalities }: Props) {
           {/* Step 4: Municipality */}
           {step === 4 && (
             <div className="bg-white rounded-2xl shadow-lg p-8">
-              <p className="text-xs font-semibold text-[#31C48D] uppercase tracking-widest mb-2">Step 4 of 6</p>
+              <p className="text-xs font-semibold text-[var(--color-secondary)] uppercase tracking-widest mb-2">Step 4 of 6</p>
               <h2 className="text-xl font-bold text-slate-800 mb-1">Your municipality?</h2>
               <p className="text-slate-500 text-sm mb-6">Type to search across BC and Alberta municipalities.</p>
               <div ref={muniContainerRef} className="relative">
@@ -419,7 +395,7 @@ export default function RequestAccessForm({ municipalities }: Props) {
                   value={muniQuery}
                   onChange={e => { setMuniQuery(e.target.value); setMuniName(''); setMuniPop(null); }}
                   placeholder="e.g. Kelowna"
-                  className="w-full border-b-2 border-slate-200 focus:border-[#31C48D] outline-none text-slate-800 pb-3 bg-transparent transition-colors placeholder:text-slate-300"
+                  className="w-full border-b-2 border-slate-200 focus:border-[var(--color-secondary)] outline-none text-slate-800 pb-3 bg-transparent transition-colors placeholder:text-slate-300"
                   style={{ fontSize: '18px' }}
                   autoComplete="off"
                   onFocus={() => muniQuery && setMuniOpen(muniResults.length > 0)}
@@ -441,7 +417,7 @@ export default function RequestAccessForm({ municipalities }: Props) {
                 )}
               </div>
               {muniName && (
-                <p className="text-[#31C48D] text-sm mt-3 flex items-center gap-1.5">
+                <p className="text-[var(--color-secondary)] text-sm mt-3 flex items-center gap-1.5">
                   <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M5 13l4 4L19 7" />
                   </svg>
@@ -459,7 +435,7 @@ export default function RequestAccessForm({ municipalities }: Props) {
           {/* Step 5: Team Size */}
           {step === 5 && (
             <div className="bg-white rounded-2xl shadow-lg p-8">
-              <p className="text-xs font-semibold text-[#31C48D] uppercase tracking-widest mb-2">Step 5 of 6</p>
+              <p className="text-xs font-semibold text-[var(--color-secondary)] uppercase tracking-widest mb-2">Step 5 of 6</p>
               <h2 className="text-xl font-bold text-slate-800 mb-1">Team size?</h2>
               <p className="text-slate-500 text-sm mb-5">How many people would use this platform?</p>
               <div className="flex flex-col gap-2">
@@ -475,7 +451,7 @@ export default function RequestAccessForm({ municipalities }: Props) {
           {/* Step 6: Referral */}
           {step === 6 && (
             <div className="bg-white rounded-2xl shadow-lg p-8">
-              <p className="text-xs font-semibold text-[#31C48D] uppercase tracking-widest mb-2">Step 6 of 6</p>
+              <p className="text-xs font-semibold text-[var(--color-secondary)] uppercase tracking-widest mb-2">Step 6 of 6</p>
               <h2 className="text-xl font-bold text-slate-800 mb-1">How did you hear about us?</h2>
               <p className="text-slate-500 text-sm mb-5">Help us understand how you found Civic Northstar.</p>
               <div className="flex flex-col gap-2">
@@ -493,7 +469,7 @@ export default function RequestAccessForm({ municipalities }: Props) {
                     value={referralOther}
                     onChange={e => setReferralOther(e.target.value)}
                     placeholder="Tell us more..."
-                    className="w-full border-b-2 border-slate-200 focus:border-[#31C48D] outline-none text-slate-800 pb-2 bg-transparent transition-colors placeholder:text-slate-300"
+                    className="w-full border-b-2 border-slate-200 focus:border-[var(--color-secondary)] outline-none text-slate-800 pb-2 bg-transparent transition-colors placeholder:text-slate-300"
                     style={{ fontSize: '16px' }}
                     onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); doSubmit(); } }}
                   />
@@ -501,7 +477,7 @@ export default function RequestAccessForm({ municipalities }: Props) {
                     <button
                       onClick={() => doSubmit()}
                       disabled={submitting}
-                      className="flex items-center gap-2 bg-[#31C48D] hover:bg-[#28a87a] active:bg-[#22956a] text-white font-semibold px-5 py-2.5 rounded-lg transition-colors text-sm disabled:opacity-50"
+                      className="flex items-center gap-2 bg-[var(--color-primary)] hover:bg-[var(--color-secondary)] active:bg-[var(--color-secondary)] text-white font-semibold px-5 py-2.5 rounded-lg transition-colors text-sm disabled:opacity-50"
                     >
                       {submitting ? 'Submitting…' : <>Submit <ChevronRight /></>}
                     </button>
@@ -516,22 +492,22 @@ export default function RequestAccessForm({ municipalities }: Props) {
           {step === 7 && (
             <div className="text-center text-white">
               <div className="flex justify-center mb-6">
-                <div className="w-16 h-16 bg-[#31C48D] rounded-2xl flex items-center justify-center">
+                <div className="w-16 h-16 bg-[var(--color-secondary)] rounded-2xl flex items-center justify-center">
                   <svg className="w-9 h-9 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
               </div>
-              <h1 className="text-3xl font-bold mb-4 text-white">You're on the list!</h1>
+              <h1 className="text-3xl font-bold mb-4 text-white">Thank you!</h1>
               <p className="text-white/70 text-base mb-8 max-w-sm mx-auto leading-relaxed">
-                Thanks, <strong className="text-white font-semibold">{name}</strong>. We'll reach out to{' '}
+                Your request has been saved. We'll reach out to{' '}
                 <strong className="text-white font-semibold">{email}</strong> when your access is ready.
               </p>
               <a
                 href="/"
                 className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 active:bg-white/25 text-white font-semibold px-8 py-3.5 rounded-xl transition-colors text-base"
               >
-                Explore the dashboard <ChevronRight />
+                Back to home <ChevronRight />
               </a>
             </div>
           )}

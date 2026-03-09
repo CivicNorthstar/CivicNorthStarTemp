@@ -1,0 +1,25 @@
+---
+import Layout from '../layouts/Layout.astro';
+import RequestAccessForm from '../components/RequestAccessForm.tsx';
+
+// Mock list of municipalities for the autocomplete (matching BC and Alberta examples from guidelines)
+const municipalities = [
+  { name: 'Vancouver', slug: 'vancouver', population: 662248, province: 'bc' },
+  { name: 'Surrey', slug: 'surrey', population: 568322, province: 'bc' },
+  { name: 'Burnaby', slug: 'burnaby', population: 249125, province: 'bc' },
+  { name: 'Kelowna', slug: 'kelowna', population: 144576, province: 'bc' },
+  { name: 'Victoria', slug: 'victoria', population: 91867, province: 'bc' },
+  { name: 'Calgary', slug: 'calgary', population: 1306784, province: 'ab' },
+  { name: 'Edmonton', slug: 'edmonton', population: 1010899, province: 'ab' },
+  { name: 'Red Deer', slug: 'red-deer', population: 100418, province: 'ab' },
+  { name: 'Lethbridge', slug: 'lethbridge', population: 98406, province: 'ab' },
+  { name: 'St. Albert', slug: 'st-albert', population: 68232, province: 'ab' }
+];
+
+// Set prerender to false to ensure we can build the API route.
+export const prerender = false;
+---
+
+<Layout title="Sign Up For Early Access">
+  <RequestAccessForm client:load municipalities={municipalities} />
+</Layout>
