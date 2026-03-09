@@ -15,9 +15,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
     return json(400, { error: 'Invalid request body.' });
   }
 
-  const { name, email, role, municipality, teamSize, referral } = body;
+  const { firstName, lastName, email, role, municipality, teamSize, referral } = body;
 
-  if (!name || !email || !municipality) {
+  if (!email || !municipality) {
     return json(400, { error: 'Missing required fields.' });
   }
 
@@ -44,7 +44,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
         api_key: apiKey,
         email_address: email,
         fields: {
-          FirstName: String(name),
+          FirstName: String(firstName || ''),
+          LastName: String(lastName || ''),
           Role: String(role || ''),
           Municipality: String(municipality),
           TeamSize: String(teamSize || ''),

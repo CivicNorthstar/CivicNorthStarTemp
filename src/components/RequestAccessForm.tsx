@@ -52,7 +52,8 @@ export default function RequestAccessForm({ municipalities }: Props) {
   const [dir, setDir] = useState(1);
 
   // Form fields
-  const [name, setName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [role, setRole] = useState('');
   const [roleOther, setRoleOther] = useState('');
@@ -70,8 +71,8 @@ export default function RequestAccessForm({ municipalities }: Props) {
   const roleOtherRef = useRef<HTMLInputElement>(null);
   const referralOtherRef = useRef<HTMLInputElement>(null);
 
-  const TOTAL_FORM_STEPS = 6;
-  const progress = step === 0 ? 0 : step >= 7 ? 100 : Math.round((step / TOTAL_FORM_STEPS) * 100);
+  const TOTAL_FORM_STEPS = 7;
+  const progress = step === 0 ? 0 : step >= 8 ? 100 : Math.round((step / TOTAL_FORM_STEPS) * 100);
 
   const navigate = useCallback((nextStep: number, direction = 1) => {
     setDir(direction);
@@ -84,11 +85,11 @@ export default function RequestAccessForm({ municipalities }: Props) {
   }, []);
 
   const next = useCallback(() => navigate(step + 1), [step, navigate]);
-  const back = useCallback(() => { if (step > 0 && step < 7) navigate(step - 1, -1); }, [step, navigate]);
+  const back = useCallback(() => { if (step > 0 && step < 8) navigate(step - 1, -1); }, [step, navigate]);
 
   // Focus text inputs on step change
   useEffect(() => {
-    if ([1, 2, 4].includes(step)) {
+    if ([1, 2, 3, 5].includes(step)) {
       const timer = setTimeout(() => textInputRef.current?.focus(), 250);
       return () => clearTimeout(timer);
     }
@@ -99,23 +100,26 @@ export default function RequestAccessForm({ municipalities }: Props) {
   const validateAndAdvance = useCallback(() => {
     setError('');
     if (step === 1) {
-      if (!name.trim()) { setError('Please enter your full name.'); return; }
+      if (!firstName.trim()) { setError('Please enter your first name.'); return; }
       next();
     } else if (step === 2) {
+      if (!lastName.trim()) { setError('Please enter your last name.'); return; }
+      next();
+    } else if (step === 3) {
       if (!email.trim()) { setError('Please enter your email address.'); return; }
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError('Please enter a valid email address.'); return; }
       next();
-    } else if (step === 4) {
+    } else if (step === 5) {
       if (!muniName.trim()) { setError('Please enter your municipality.'); return; }
       next();
     }
-  }, [step, name, email, muniName, next]);
+  }, [step, firstName, lastName, email, muniName, next]);
 
   // Keyboard navigation
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && step > 0 && step < 7) { back(); return; }
-      if (e.key === 'Enter' && [1, 2, 4].includes(step)) {
+      if (e.key === 'Escape' && step > 0 && step < 8) { back(); return; }
+      if (e.key === 'Enter' && [1, 2, 3, 5].includes(step)) {
         e.preventDefault();
         validateAndAdvance();
       }
@@ -159,7 +163,8 @@ export default function RequestAccessForm({ municipalities }: Props) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name,
+          firstName,
+          lastName,
           email,
           role: role === 'Other' ? `Other: ${roleOther}` : role,
           municipality: muniName,
@@ -175,14 +180,14 @@ export default function RequestAccessForm({ municipalities }: Props) {
         return;
       }
       
-      navigate(7);
+      navigate(8);
     } catch {
       setError('Network error. Please try again.');
       setSubmitting(false);
     }
   };
 
-  const isNavy = step === 0 || step === 7;
+  const isNavy = step === 0 || step === 8;
 
   const transitionStyle: React.CSSProperties = {
     opacity: visible ? 1 : 0,
@@ -225,7 +230,7 @@ export default function RequestAccessForm({ municipalities }: Props) {
         </nav>
       )}
       {/* Progress bar */}
-      {step > 0 && step < 7 && (
+      {step > 0 && step < 8 && (
         <div className="fixed top-0 left-0 right-0 z-50 h-1 bg-slate-200">
           <div
             className="h-full bg-[var(--color-secondary)] transition-all duration-500 ease-out"
@@ -235,7 +240,7 @@ export default function RequestAccessForm({ municipalities }: Props) {
       )}
 
       {/* Back button */}
-      {step > 0 && step < 7 && (
+      {step > 0 && step < 8 && (
         <button
           onClick={back}
           className="fixed top-2 left-2 z-50 p-3 rounded-full text-slate-500 hover:text-slate-700 hover:bg-slate-100 active:bg-slate-200 transition-colors"
@@ -290,19 +295,19 @@ export default function RequestAccessForm({ municipalities }: Props) {
             </div>
           )}
 
-          {/* Step 1: Name */}
+          {/* Step 1: First Name */}
           {step === 1 && (
             <div className="bg-white rounded-2xl shadow-lg p-8">
-              <p className="text-xs font-semibold text-[var(--color-secondary)] uppercase tracking-widest mb-2">Step 1 of 6</p>
-              <h2 className="text-xl font-bold text-slate-800 mb-1">What's your name?</h2>
+              <p className="text-xs font-semibold text-[var(--color-secondary)] uppercase tracking-widest mb-2">Step 1 of 7</p>
+              <h2 className="text-xl font-bold text-slate-800 mb-1">What's your first name?</h2>
               <p className="text-slate-500 text-sm mb-6">We'd like to know who we're talking to.</p>
               <input
                 ref={textInputRef}
                 type="text"
-                value={name}
-                onChange={e => setName(e.target.value)}
-                placeholder="Jane Smith"
-                autoComplete="name"
+                value={firstName}
+                onChange={e => setFirstName(e.target.value)}
+                placeholder="Jane"
+                autoComplete="given-name"
                 className="w-full border-b-2 border-slate-200 focus:border-[var(--color-secondary)] outline-none text-slate-800 pb-3 bg-transparent transition-colors placeholder:text-slate-300"
                 style={{ fontSize: '18px' }}
               />
@@ -314,10 +319,34 @@ export default function RequestAccessForm({ municipalities }: Props) {
             </div>
           )}
 
-          {/* Step 2: Email */}
+          {/* Step 2: Last Name */}
           {step === 2 && (
             <div className="bg-white rounded-2xl shadow-lg p-8">
-              <p className="text-xs font-semibold text-[var(--color-secondary)] uppercase tracking-widest mb-2">Step 2 of 6</p>
+              <p className="text-xs font-semibold text-[var(--color-secondary)] uppercase tracking-widest mb-2">Step 2 of 7</p>
+              <h2 className="text-xl font-bold text-slate-800 mb-1">And your last name?</h2>
+              <p className="text-slate-500 text-sm mb-6">Just for our records.</p>
+              <input
+                ref={textInputRef}
+                type="text"
+                value={lastName}
+                onChange={e => setLastName(e.target.value)}
+                placeholder="Smith"
+                autoComplete="family-name"
+                className="w-full border-b-2 border-slate-200 focus:border-[var(--color-secondary)] outline-none text-slate-800 pb-3 bg-transparent transition-colors placeholder:text-slate-300"
+                style={{ fontSize: '18px' }}
+              />
+              {error && <p className="text-red-500 text-sm mt-3">{error}</p>}
+              <div className="flex items-center justify-between mt-6 sticky bottom-0 bg-white pt-2">
+                {enterHint}
+                {nextBtn(validateAndAdvance)}
+              </div>
+            </div>
+          )}
+
+          {/* Step 3: Email */}
+          {step === 3 && (
+            <div className="bg-white rounded-2xl shadow-lg p-8">
+              <p className="text-xs font-semibold text-[var(--color-secondary)] uppercase tracking-widest mb-2">Step 3 of 7</p>
               <h2 className="text-xl font-bold text-slate-800 mb-1">Your official email?</h2>
               <p className="text-slate-500 text-sm mb-6">Use your municipality or government email address.</p>
               <input
@@ -338,10 +367,10 @@ export default function RequestAccessForm({ municipalities }: Props) {
             </div>
           )}
 
-          {/* Step 3: Role */}
-          {step === 3 && (
+          {/* Step 4: Role */}
+          {step === 4 && (
             <div className="bg-white rounded-2xl shadow-lg p-8">
-              <p className="text-xs font-semibold text-[var(--color-secondary)] uppercase tracking-widest mb-2">Step 3 of 6</p>
+              <p className="text-xs font-semibold text-[var(--color-secondary)] uppercase tracking-widest mb-2">Step 4 of 7</p>
               <h2 className="text-xl font-bold text-slate-800 mb-1">What's your role?</h2>
               <p className="text-slate-500 text-sm mb-5">Select the option that best describes you.</p>
               <div className="flex flex-col gap-2">
@@ -371,10 +400,10 @@ export default function RequestAccessForm({ municipalities }: Props) {
             </div>
           )}
 
-          {/* Step 4: Municipality */}
-          {step === 4 && (
+          {/* Step 5: Municipality */}
+          {step === 5 && (
             <div className="bg-white rounded-2xl shadow-lg p-8">
-              <p className="text-xs font-semibold text-[var(--color-secondary)] uppercase tracking-widest mb-2">Step 4 of 6</p>
+              <p className="text-xs font-semibold text-[var(--color-secondary)] uppercase tracking-widest mb-2">Step 5 of 7</p>
               <h2 className="text-xl font-bold text-slate-800 mb-1">Your municipality?</h2>
               <p className="text-slate-500 text-sm mb-6">Which municipality or organization do you represent?</p>
               <input
@@ -394,10 +423,10 @@ export default function RequestAccessForm({ municipalities }: Props) {
             </div>
           )}
 
-          {/* Step 5: Team Size */}
-          {step === 5 && (
+          {/* Step 6: Team Size */}
+          {step === 6 && (
             <div className="bg-white rounded-2xl shadow-lg p-8">
-              <p className="text-xs font-semibold text-[var(--color-secondary)] uppercase tracking-widest mb-2">Step 5 of 6</p>
+              <p className="text-xs font-semibold text-[var(--color-secondary)] uppercase tracking-widest mb-2">Step 6 of 7</p>
               <h2 className="text-xl font-bold text-slate-800 mb-1">Team size?</h2>
               <p className="text-slate-500 text-sm mb-5">How many people would use this platform?</p>
               <div className="flex flex-col gap-2">
@@ -410,10 +439,10 @@ export default function RequestAccessForm({ municipalities }: Props) {
             </div>
           )}
 
-          {/* Step 6: Referral */}
-          {step === 6 && (
+          {/* Step 7: Referral */}
+          {step === 7 && (
             <div className="bg-white rounded-2xl shadow-lg p-8">
-              <p className="text-xs font-semibold text-[var(--color-secondary)] uppercase tracking-widest mb-2">Step 6 of 6</p>
+              <p className="text-xs font-semibold text-[var(--color-secondary)] uppercase tracking-widest mb-2">Step 7 of 7</p>
               <h2 className="text-xl font-bold text-slate-800 mb-1">How did you hear about us?</h2>
               <p className="text-slate-500 text-sm mb-5">Help us understand how you found Civic Northstar.</p>
               <div className="flex flex-col gap-2">
@@ -450,8 +479,8 @@ export default function RequestAccessForm({ municipalities }: Props) {
             </div>
           )}
 
-          {/* Step 7: Success */}
-          {step === 7 && (
+          {/* Step 8: Success */}
+          {step === 8 && (
             <div className="text-center text-white">
               <div className="flex justify-center mb-6">
                 <div className="w-16 h-16 bg-[var(--color-secondary)] rounded-2xl flex items-center justify-center">
