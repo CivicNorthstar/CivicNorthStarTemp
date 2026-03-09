@@ -254,9 +254,6 @@ export default function RequestAccessForm({ municipalities }: Props) {
             <svg className="w-8 h-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 2L2 22h20L12 2z"/></svg>
             <span className="text-white font-bold text-lg tracking-tight">Civic Northstar</span>
           </div>
-          <a href="/" className="text-white/80 hover:text-white text-sm font-medium transition-colors">
-            Back to Home
-          </a>
         </nav>
       )}
       {/* Progress bar */}
@@ -526,12 +523,6 @@ export default function RequestAccessForm({ municipalities }: Props) {
                 Your request has been saved. We'll reach out to{' '}
                 <strong className="text-white font-semibold">{email}</strong> when your access is ready.
               </p>
-              <a
-                href="/"
-                className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 active:bg-white/25 text-white font-semibold px-8 py-3.5 rounded-xl transition-colors text-base"
-              >
-                Back to home <ChevronRight />
-              </a>
             </div>
           )}
 
