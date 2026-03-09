@@ -21,9 +21,13 @@ export const POST: APIRoute = async ({ request }) => {
     return json(400, { error: 'Missing required fields.' });
   }
 
-  const apiKey = import.meta.env.EMAIL_OCTOPUS_API_KEY as string | undefined;
+  const runtime = (locals as any).runtime;
+  const apiKey = (import.meta.env.EMAIL_OCTOPUS_API_KEY || 
+                  process.env.EMAIL_OCTOPUS_API_KEY || 
+                  runtime?.env?.EMAIL_OCTOPUS_API_KEY) as string | undefined;
+
   if (!apiKey) {
-    console.error('Missing EmailOctopus API key');
+    console.error('Missing EmailOctopus API key in any source (import.meta, process.env, or runtime.env)');
     return json(500, { error: 'Server configuration error.' });
   }
 
