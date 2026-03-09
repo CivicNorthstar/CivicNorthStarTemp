@@ -229,7 +229,7 @@ export default function RequestAccessForm({ municipalities }: Props) {
         <nav className="frosted sticky.top-0 z-50 px-6 py-4 flex items-center justify-between border-b border-white/10">
           <div className="flex items-center gap-2">
             <svg className="w-8 h-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 2L2 22h20L12 2z"/></svg>
-            <span className="text-white font-bold text-lg tracking-tight">CivicNS</span>
+            <span className="text-white font-bold text-lg tracking-tight">Civic Northstar</span>
           </div>
           <a href="/" className="text-white/80 hover:text-white text-sm font-medium transition-colors">
             Back to Home
