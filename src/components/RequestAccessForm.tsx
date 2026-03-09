@@ -528,6 +528,13 @@ export default function RequestAccessForm({ municipalities }: Props) {
 
         </div>
       </div>
+
+      {/* Privacy Policy Footer */}
+      <footer className="w-full text-center pb-6 px-4 z-10 mt-auto">
+        <p className={`text-[11px] max-w-2xl mx-auto leading-snug ${isNavy ? 'text-white/50' : 'text-slate-400'}`}>
+          We respect your privacy. By requesting access, you agree to our use of your information for email marketing and to contact you about Civic Northstar, in accordance with our data collection policy.
+        </p>
+      </footer>
     </div>
   );
 }
