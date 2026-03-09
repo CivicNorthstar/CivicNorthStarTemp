@@ -61,6 +61,8 @@ export default function RequestAccessForm({ municipalities }: Props) {
   const [teamSize, setTeamSize] = useState('');
   const [referral, setReferral] = useState('');
   const [referralOther, setReferralOther] = useState('');
+  const [consent, setConsent] = useState(false);
+  const [agreeToPolicy, setAgreeToPolicy] = useState(false);
 
 
 
@@ -71,8 +73,8 @@ export default function RequestAccessForm({ municipalities }: Props) {
   const roleOtherRef = useRef<HTMLInputElement>(null);
   const referralOtherRef = useRef<HTMLInputElement>(null);
 
-  const TOTAL_FORM_STEPS = 7;
-  const progress = step === 0 ? 0 : step >= 8 ? 100 : Math.round((step / TOTAL_FORM_STEPS) * 100);
+  const TOTAL_FORM_STEPS = 8;
+  const progress = step === 0 ? 0 : step >= 9 ? 100 : Math.round((step / TOTAL_FORM_STEPS) * 100);
 
   const navigate = useCallback((nextStep: number, direction = 1) => {
     setDir(direction);
@@ -85,7 +87,7 @@ export default function RequestAccessForm({ municipalities }: Props) {
   }, []);
 
   const next = useCallback(() => navigate(step + 1), [step, navigate]);
-  const back = useCallback(() => { if (step > 0 && step < 8) navigate(step - 1, -1); }, [step, navigate]);
+  const back = useCallback(() => { if (step > 0 && step < 9) navigate(step - 1, -1); }, [step, navigate]);
 
   // Focus text inputs on step change
   useEffect(() => {
@@ -118,7 +120,7 @@ export default function RequestAccessForm({ municipalities }: Props) {
   // Keyboard navigation
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && step > 0 && step < 8) { back(); return; }
+      if (e.key === 'Escape' && step > 0 && step < 9) { back(); return; }
       if (e.key === 'Enter' && [1, 2, 3, 5].includes(step)) {
         e.preventDefault();
         validateAndAdvance();
@@ -147,16 +149,16 @@ export default function RequestAccessForm({ municipalities }: Props) {
   const handleReferralSelect = (r: string) => {
     setReferral(r);
     if (r !== 'Other') {
-      setTimeout(() => doSubmit(r), 150);
+      setTimeout(() => navigate(step + 1), 150);
     } else {
       setTimeout(() => referralOtherRef.current?.focus(), 100);
     }
   };
 
-  const doSubmit = async (finalReferral?: string) => {
+  const doSubmit = async () => {
     setSubmitting(true);
     setError('');
-    const ref = finalReferral ?? (referral === 'Other' ? `Other: ${referralOther}` : referral);
+    const ref = referral === 'Other' ? `Other: ${referralOther}` : referral;
     
     try {
       const res = await fetch('/api/email-octopus', {
@@ -170,6 +172,7 @@ export default function RequestAccessForm({ municipalities }: Props) {
           municipality: muniName,
           teamSize,
           referral: ref,
+          consent: true, // We only submit if they consented
         }),
       });
       
@@ -180,14 +183,14 @@ export default function RequestAccessForm({ municipalities }: Props) {
         return;
       }
       
-      navigate(8);
+      navigate(9);
     } catch {
       setError('Network error. Please try again.');
       setSubmitting(false);
     }
   };
 
-  const isNavy = step === 0 || step === 8;
+  const isNavy = step === 0 || step === 9;
 
   const transitionStyle: React.CSSProperties = {
     opacity: visible ? 1 : 0,
@@ -230,7 +233,7 @@ export default function RequestAccessForm({ municipalities }: Props) {
         </nav>
       )}
       {/* Progress bar */}
-      {step > 0 && step < 8 && (
+      {step > 0 && step < 9 && (
         <div className="fixed top-0 left-0 right-0 z-50 h-1 bg-slate-200">
           <div
             className="h-full bg-[var(--color-secondary)] transition-all duration-500 ease-out"
@@ -240,7 +243,7 @@ export default function RequestAccessForm({ municipalities }: Props) {
       )}
 
       {/* Back button */}
-      {step > 0 && step < 8 && (
+      {step > 0 && step < 9 && (
         <button
           onClick={back}
           className="fixed top-2 left-2 z-50 p-3 rounded-full text-slate-500 hover:text-slate-700 hover:bg-slate-100 active:bg-slate-200 transition-colors"
@@ -465,13 +468,7 @@ export default function RequestAccessForm({ municipalities }: Props) {
                     onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); doSubmit(); } }}
                   />
                   <div className="flex justify-end mt-4">
-                    <button
-                      onClick={() => doSubmit()}
-                      disabled={submitting}
-                      className="flex items-center gap-2 bg-[var(--color-primary)] hover:bg-[var(--color-secondary)] active:bg-[var(--color-secondary)] text-white font-semibold px-5 py-2.5 rounded-lg transition-colors text-sm disabled:opacity-50"
-                    >
-                      {submitting ? 'Submitting…' : <>Submit <ChevronRight /></>}
-                    </button>
+                    {nextBtn(() => { if (referralOther.trim()) next(); else referralOtherRef.current?.focus(); })}
                   </div>
                 </div>
               )}
@@ -479,8 +476,63 @@ export default function RequestAccessForm({ municipalities }: Props) {
             </div>
           )}
 
-          {/* Step 8: Success */}
+          {/* Step 8: Consent */}
           {step === 8 && (
+            <div className="bg-white rounded-2xl shadow-lg p-8">
+              <p className="text-xs font-semibold text-[var(--color-secondary)] uppercase tracking-widest mb-2">Final Step</p>
+              <h2 className="text-xl font-bold text-slate-800 mb-1">One last thing...</h2>
+              <p className="text-slate-500 text-sm mb-6">We need your permission to keep you updated about Civic Northstar.</p>
+              
+              <div className="flex flex-col gap-4">
+                <label className="flex items-start gap-3 cursor-pointer group">
+                  <div className="mt-1 relative flex items-center justify-center">
+                    <input
+                      type="checkbox"
+                      checked={consent}
+                      onChange={e => setConsent(e.target.checked)}
+                      className="peer sr-only"
+                    />
+                    <div className="w-5 h-5 border-2 border-slate-300 rounded transition-colors group-hover:border-[var(--color-secondary)] peer-checked:border-[var(--color-secondary)] peer-checked:bg-[var(--color-secondary)]"></div>
+                    <svg className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  </div>
+                  <span className="text-sm text-slate-600 leading-snug">
+                    I agree to receive email communications regarding early access, updates, and community insights from Civic Northstar.
+                  </span>
+                </label>
+
+                <label className="flex items-start gap-3 cursor-pointer group">
+                  <div className="mt-1 relative flex items-center justify-center">
+                    <input
+                      type="checkbox"
+                      checked={agreeToPolicy}
+                      onChange={e => setAgreeToPolicy(e.target.checked)}
+                      className="peer sr-only"
+                    />
+                    <div className="w-5 h-5 border-2 border-slate-300 rounded transition-colors group-hover:border-[var(--color-secondary)] peer-checked:border-[var(--color-secondary)] peer-checked:bg-[var(--color-secondary)]"></div>
+                    <svg className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  </div>
+                  <span className="text-sm text-slate-600 leading-snug">
+                    I have read and agree to the data collection policy regarding how my information will be handled.
+                  </span>
+                </label>
+              </div>
+
+              {error && <p className="text-red-500 text-sm mt-4">{error}</p>}
+
+              <div className="flex justify-end mt-8">
+                <button
+                  onClick={doSubmit}
+                  disabled={submitting || !consent || !agreeToPolicy}
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#1A5276] hover:bg-[#2E86C1] active:bg-[#2E86C1] text-white font-bold px-8 py-3.5 rounded-xl transition-all shadow-md disabled:opacity-40 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  {submitting ? 'Requesting Access...' : <>Complete Submission <ChevronRight /></>}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 9: Success */}
+          {step === 9 && (
             <div className="text-center text-white">
               <div className="flex justify-center mb-6">
                 <div className="w-16 h-16 bg-[var(--color-secondary)] rounded-2xl flex items-center justify-center">
