@@ -57,16 +57,11 @@ export default function RequestAccessForm({ municipalities }: Props) {
   const [role, setRole] = useState('');
   const [roleOther, setRoleOther] = useState('');
   const [muniName, setMuniName] = useState('');
-  const [muniPop, setMuniPop] = useState<number | null>(null);
   const [teamSize, setTeamSize] = useState('');
   const [referral, setReferral] = useState('');
   const [referralOther, setReferralOther] = useState('');
 
-  // Municipality combobox
-  const [muniQuery, setMuniQuery] = useState('');
-  const [muniResults, setMuniResults] = useState<Municipality[]>([]);
-  const [muniOpen, setMuniOpen] = useState(false);
-  const muniContainerRef = useRef<HTMLDivElement>(null);
+
 
   // UI state
   const [error, setError] = useState('');
@@ -93,35 +88,13 @@ export default function RequestAccessForm({ municipalities }: Props) {
 
   // Focus text inputs on step change
   useEffect(() => {
-    if ([1, 2].includes(step)) {
+    if ([1, 2, 4].includes(step)) {
       const timer = setTimeout(() => textInputRef.current?.focus(), 250);
       return () => clearTimeout(timer);
     }
   }, [step]);
 
-  // Municipality search
-  useEffect(() => {
-    if (!muniQuery.trim()) {
-      setMuniResults([]);
-      setMuniOpen(false);
-      return;
-    }
-    const q = muniQuery.toLowerCase();
-    const results = municipalities.filter(m => m.name.toLowerCase().includes(q)).slice(0, 8);
-    setMuniResults(results);
-    setMuniOpen(results.length > 0);
-  }, [muniQuery, municipalities]);
 
-  // Close dropdown on outside click
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (muniContainerRef.current && !muniContainerRef.current.contains(e.target as Node)) {
-        setMuniOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
 
   const validateAndAdvance = useCallback(() => {
     setError('');
@@ -133,7 +106,7 @@ export default function RequestAccessForm({ municipalities }: Props) {
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError('Please enter a valid email address.'); return; }
       next();
     } else if (step === 4) {
-      if (!muniName) { setError('Please select your municipality from the list.'); return; }
+      if (!muniName.trim()) { setError('Please enter your municipality.'); return; }
       next();
     }
   }, [step, name, email, muniName, next]);
@@ -142,21 +115,16 @@ export default function RequestAccessForm({ municipalities }: Props) {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && step > 0 && step < 7) { back(); return; }
-      if (e.key === 'Enter' && [1, 2, 4].includes(step) && !muniOpen) {
+      if (e.key === 'Enter' && [1, 2, 4].includes(step)) {
         e.preventDefault();
         validateAndAdvance();
       }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [step, back, validateAndAdvance, muniOpen]);
+  }, [step, back, validateAndAdvance]);
 
-  const handleMuniSelect = (m: Municipality) => {
-    setMuniName(m.name);
-    setMuniPop(m.population);
-    setMuniQuery(m.name);
-    setMuniOpen(false);
-  };
+
 
   const handleRoleSelect = (r: string) => {
     setRole(r);
@@ -408,42 +376,16 @@ export default function RequestAccessForm({ municipalities }: Props) {
             <div className="bg-white rounded-2xl shadow-lg p-8">
               <p className="text-xs font-semibold text-[var(--color-secondary)] uppercase tracking-widest mb-2">Step 4 of 6</p>
               <h2 className="text-xl font-bold text-slate-800 mb-1">Your municipality?</h2>
-              <p className="text-slate-500 text-sm mb-6">Type to search across BC and Alberta municipalities.</p>
-              <div ref={muniContainerRef} className="relative">
-                <input
-                  type="text"
-                  value={muniQuery}
-                  onChange={e => { setMuniQuery(e.target.value); setMuniName(''); setMuniPop(null); }}
-                  placeholder="e.g. Kelowna"
-                  className="w-full border-b-2 border-slate-200 focus:border-[var(--color-secondary)] outline-none text-slate-800 pb-3 bg-transparent transition-colors placeholder:text-slate-300"
-                  style={{ fontSize: '18px' }}
-                  autoComplete="off"
-                  onFocus={() => muniQuery && setMuniOpen(muniResults.length > 0)}
-                />
-                {muniOpen && (
-                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-20 overflow-hidden max-h-64 overflow-y-auto">
-                    {muniResults.map(m => (
-                      <button
-                        key={`${m.slug}-${m.province}`}
-                        type="button"
-                        onMouseDown={e => { e.preventDefault(); handleMuniSelect(m); }}
-                        className="w-full text-left px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 active:bg-slate-100 flex items-center justify-between min-h-[44px]"
-                      >
-                        <span className="font-medium">{m.name}</span>
-                        <span className="text-slate-400 text-xs ml-2 flex-shrink-0">{m.province.toUpperCase()} · {m.population.toLocaleString()}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-              {muniName && (
-                <p className="text-[var(--color-secondary)] text-sm mt-3 flex items-center gap-1.5">
-                  <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M5 13l4 4L19 7" />
-                  </svg>
-                  {muniName} selected
-                </p>
-              )}
+              <p className="text-slate-500 text-sm mb-6">Which municipality or organization do you represent?</p>
+              <input
+                ref={textInputRef}
+                type="text"
+                value={muniName}
+                onChange={e => setMuniName(e.target.value)}
+                placeholder="e.g. City of Kelowna"
+                className="w-full border-b-2 border-slate-200 focus:border-[var(--color-secondary)] outline-none text-slate-800 pb-3 bg-transparent transition-colors placeholder:text-slate-300"
+                style={{ fontSize: '18px' }}
+              />
               {error && <p className="text-red-500 text-sm mt-3">{error}</p>}
               <div className="flex items-center justify-between mt-6 sticky bottom-0 bg-white pt-2">
                 {enterHint}
