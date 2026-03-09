@@ -184,11 +184,34 @@ export default function RequestAccessForm({ municipalities }: Props) {
   const doSubmit = async (finalReferral?: string) => {
     setSubmitting(true);
     setError('');
-    // Removed API submission as requested. Just advancing to success step.
-    setTimeout(() => {
-      setSubmitting(false);
+    const ref = finalReferral ?? (referral === 'Other' ? `Other: ${referralOther}` : referral);
+    
+    try {
+      const res = await fetch('/api/email-octopus', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          email,
+          role: role === 'Other' ? `Other: ${roleOther}` : role,
+          municipality: muniName,
+          teamSize,
+          referral: ref,
+        }),
+      });
+      
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError((data as any).error || 'Something went wrong. Please try again.');
+        setSubmitting(false);
+        return;
+      }
+      
       navigate(7);
-    }, 600);
+    } catch {
+      setError('Network error. Please try again.');
+      setSubmitting(false);
+    }
   };
 
   const isNavy = step === 0 || step === 7;
