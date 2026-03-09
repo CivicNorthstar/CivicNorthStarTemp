@@ -512,7 +512,7 @@ export default function RequestAccessForm({ municipalities }: Props) {
                     <svg className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   </div>
                   <span className="text-sm text-slate-600 leading-snug">
-                    I have read and agree to the data collection policy regarding how my information will be handled.
+                    I have read and agree to the <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-[var(--color-secondary)] hover:underline font-medium">Privacy Policy</a> regarding how my information will be handled.
                   </span>
                 </label>
               </div>
@@ -555,7 +555,7 @@ export default function RequestAccessForm({ municipalities }: Props) {
       {/* Privacy Policy Footer */}
       <footer className="w-full text-center pb-6 px-4 z-10 mt-auto">
         <p className={`text-[11px] max-w-2xl mx-auto leading-snug ${isNavy ? 'text-white/50' : 'text-slate-400'}`}>
-          We respect your privacy. By requesting access, you agree to our use of your information for email marketing and to contact you about Civic Northstar, in accordance with our data collection policy.
+          We respect your privacy. By requesting access, you agree to our use of your information for email marketing and to contact you about Civic Northstar, in accordance with our <a href="/privacy" target="_blank" rel="noopener noreferrer" className={`underline ${isNavy ? 'text-white/70 hover:text-white' : 'text-slate-500 hover:text-slate-700'}`}>Privacy Policy</a>.
         </p>
       </footer>
     </div>

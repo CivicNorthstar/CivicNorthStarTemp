@@ -1,0 +1,105 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+export const prerender = true;
+---
+
+<Layout title="Privacy Policy">
+  <div class="page-header-bg min-h-screen relative text-white">
+    <div class="hero-dot-grid absolute inset-0 z-0 opacity-40 mix-blend-overlay pointer-events-none"></div>
+    <div class="absolute bottom-0 left-0 right-0 hero-shimmer-line z-0"></div>
+
+    <nav class="frosted sticky top-0 z-50 px-6 py-4 flex items-center justify-between border-b border-white/10">
+      <a href="/" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+        <svg class="w-8 h-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 2L2 22h20L12 2z"/></svg>
+        <span class="text-white font-bold text-lg tracking-tight">Civic Northstar</span>
+      </a>
+    </nav>
+
+    <div class="relative z-10 max-w-4xl mx-auto px-6 py-16 lg:py-24">
+      <h1 class="text-4xl lg:text-5xl font-extrabold mb-8 tracking-tight">Privacy Policy</h1>
+      
+      <div class="prose prose-invert max-w-none space-y-8 text-white/80 leading-relaxed text-lg">
+        <section>
+          <h2 class="text-2xl font-bold text-white mb-4">Introduction</h2>
+          <p>
+            At Civic Northstar, we are committed to protecting your personal information and your right to privacy. This Privacy Policy describes how we collect, use, and share your personal information when you request early access through our landing page.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-bold text-white mb-4">Information We Collect</h2>
+          <p>
+            When you request access, we collect the following information:
+          </p>
+          <ul class="list-disc pl-6 space-y-2 mt-4">
+            <li><strong>Personal Identifiers</strong>: First name, last name, and email address.</li>
+            <li><strong>Professional Details</strong>: Job role, municipality, and team size.</li>
+            <li><strong>Marketing Information</strong>: How you heard about us.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-bold text-white mb-4">How We Use Your Information</h2>
+          <p>
+            We use the information we collect to:
+          </p>
+          <ul class="list-disc pl-6 space-y-2 mt-4">
+            <li>Evaluate and process your request for early access.</li>
+            <li>Contact you with updates regarding the launch of Civic Northstar.</li>
+            <li>Provide relevant insights and benchmarks based on your municipality profile.</li>
+            <li>Improve our platform and marketing outreach.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-bold text-white mb-4">Sharing Your Information</h2>
+          <p>
+            We use <strong>MailOctopus</strong> as our marketing automation platform. By submitting our form, you acknowledge that the information you provide will be transferred to MailOctopus for processing in accordance with their <a href="https://emailoctopus.com/legal/privacy" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:underline">Privacy Policy</a>.
+          </p>
+          <p class="mt-4">
+            We do not sell, rent, or trade your personal information to any third parties for their commercial purposes.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-bold text-white mb-4">Your Rights</h2>
+          <p>
+            Depending on your location (such as Canada or the EU), you may have the right to access, correct, or delete the personal information we hold about you. You can unsubscribe from our mailing list at any time by clicking the link in the footer of our emails.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-bold text-white mb-4">Contact Us</h2>
+          <p>
+            If you have questions about this policy, please contact us through the Civic Northstar platform.
+          </p>
+        </section>
+
+        <div class="pt-12 border-t border-white/10 text-white/50 text-sm">
+          Last updated: {new Date().toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' })}
+        </div>
+      </div>
+
+      <div class="mt-16">
+        <a href="/" class="inline-flex items-center gap-2 text-white font-semibold hover:text-cyan-400 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          Back to Signup
+        </a>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .prose h2 {
+    margin-top: 2rem;
+  }
+  .prose a {
+    color: #22d3ee;
+    text-decoration: none;
+  }
+  .prose a:hover {
+    text-decoration: underline;
+  }
+</style>
